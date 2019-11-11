@@ -9,6 +9,9 @@ require 'time'
 @GITHUB_TOKEN = ENV['GITHUB_TOKEN']
 @GITHUB_WORKSPACE = ENV['GITHUB_WORKSPACE']
 
+puts @GITHUB_TOKEN
+puts @GITHUB_EVENT_PATH
+
 @event = JSON.parse(File.read(ENV['GITHUB_EVENT_PATH']))
 @repository = @event['repository']
 @owner = @repository['owner']['login']
@@ -58,7 +61,7 @@ def update_check(id, conclusion, output)
   path = "/repos/#{@owner}/#{@repo}/check-runs/#{id}"
 
   resp = http.patch(path, body.to_json, @headers)
-  puts resp.body
+
   raise resp.message if resp.code.to_i >= 300
 end
 
@@ -74,7 +77,7 @@ def run_rubocop
   annotations = []
   errors = nil
   Dir.chdir(@GITHUB_WORKSPACE) do
-    errors = JSON.parse(`git ls-files -m | xargs ls -1 2>/dev/null | grep '\\.rb$' | xargs rubocop --format json`)
+    errors = JSON.parse(`git diff-tree -r --no-commit-id --name-only head origin/master | xargs rubocop --format json`)
   end
   conclusion = 'success'
   count = 0
