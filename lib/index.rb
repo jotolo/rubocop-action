@@ -89,7 +89,6 @@ def run_rubocop
       location = offense['location']
       annotation_level = @annotation_levels[severity]
       count += 1
-      break if count > 50
 
       conclusion = 'failure' if annotation_level == 'failure'
 
@@ -105,8 +104,8 @@ def run_rubocop
 
   output = {
     "title": @check_name,
-    "summary": "#{count} offense(s) found",
-    'annotations' => annotations
+    "summary": "#{count} offense(s) found. Showing first 50 elements.",
+    'annotations' => annotations.first(50)
   }
 
   { 'output' => output, 'conclusion' => conclusion }
