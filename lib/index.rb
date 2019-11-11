@@ -89,6 +89,7 @@ def run_rubocop
       location = offense['location']
       annotation_level = @annotation_levels[severity]
       count += 1
+      break if count > 50
 
       conclusion = 'failure' if annotation_level == 'failure'
 
